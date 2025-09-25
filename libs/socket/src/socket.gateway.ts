@@ -40,7 +40,7 @@ export class SocketGateway implements OnGatewayInit {
       if (clusterId) socket.clusterId = clusterId;
       if (agentId) socket.agentId = agentId;
 
-      if (browserClientId) {
+      if (browserClientId && socket.agentId) {
         const metricsRoom = `metrics:${socket.clusterId ?? 'no-cluster'}:${socket.agentId}`;
 
         void socket.join(metricsRoom);
