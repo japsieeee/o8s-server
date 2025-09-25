@@ -1,0 +1,19 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "lib/socket": "<rootDir>/../libs/socket/src",
+    "lib/socket/(.*)": "<rootDir>/../libs/socket/src/$1",
+    "libs/socket": "<rootDir>/../libs/socket/src",
+    "libs/socket/(.*)": "<rootDir>/../libs/socket/src/$1"
+  }
+}

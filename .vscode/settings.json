@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.fixAll.eslint": "always",
+    "source.removeUnusedImports": "always"
+  },
+  "files.eol": "\n",
+  "eslint.validate": ["typescript", "typescriptreact", "javascript", "json", "jsonc", "markdown"],
+  "prettier.requireConfig": true,
+  "files.exclude": {
+    "node_modules": true,
+    "dist": true
+  }
+}
