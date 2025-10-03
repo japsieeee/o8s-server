@@ -2,8 +2,16 @@ import 'socket.io';
 
 declare module 'socket.io' {
   interface Socket {
-    agentId?: string;
-    clusterId?: string;
-    browserClientId?: string;
+    isBrowser: boolean;
+    isAgent: boolean;
+
+    agentInformation: {
+      clusterId?: string;
+      id?: string;
+    };
+
+    browserInformation: {
+      id?: string;
+    };
   }
 }
