@@ -16,7 +16,6 @@ import { EventMetricsResponse } from './types/event-response.types';
 })
 export class SocketGateway implements OnGatewayInit {
   private readonly logger = new Logger(SocketGateway.name);
-  private clusters: Map<string, Set<string>> = new Map(); // clusterId -> Set of agentIds
   private guard = new WsAuthGuard();
 
   @WebSocketServer()
@@ -75,42 +74,15 @@ export class SocketGateway implements OnGatewayInit {
     @MessageBody() payload: EventMetricsResponse,
     @ConnectedSocket() socket: Socket,
   ): void {
-    const metricsRoom = `metrics:${socket.agentInformation.clusterId ?? 'no-cluster'}:all-agent`;
+    const metricsRoom = `metrics:${socket.agentInformation.clusterId}:${socket.agentInformation.id}`;
 
-    this.logger.log('metrics room: ', metricsRoom);
-
-    this.server.to(metricsRoom).emit('metrics', payload);
+    this.server.emit(metricsRoom, payload);
   }
 
-  @SubscribeMessage('handle-join')
-  handleJoin(
-    @MessageBody()
-    payload: {
-      agentId: string;
-      clusterId: string;
-    },
-    @ConnectedSocket() socket: Socket,
-  ): void {
-    this.logger.log(
-      `Client joining room for agent ${payload.agentId} in cluster ${payload.clusterId}`,
-    );
-    const metricsRoom = `metrics:${payload.clusterId ?? 'no-cluster'}:${payload.agentId ?? 'all-agent'}`;
-    void socket.join(metricsRoom);
-  }
+  @SubscribeMessage('reboot')
+  handleReboot(@MessageBody() payload: { clusterId: string; agentId: string }): void {
+    const metricsRoom = `reboot:${payload.clusterId}:${payload.agentId}`;
 
-  @SubscribeMessage('handle-leave')
-  handleLeave(
-    @MessageBody()
-    payload: {
-      agentId: string;
-      clusterId: string;
-    },
-    @ConnectedSocket() socket: Socket,
-  ): void {
-    this.logger.log(
-      `Client leaving room for agent ${payload.agentId} in cluster ${payload.clusterId}`,
-    );
-    const metricsRoom = `metrics:${payload.clusterId ?? 'no-cluster'}:${payload.agentId ?? 'all-agent'}`;
-    void socket.leave(metricsRoom);
+    this.server.emit(metricsRoom, payload);
   }
 }
