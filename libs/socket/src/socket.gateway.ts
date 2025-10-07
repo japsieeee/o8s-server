@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
@@ -25,6 +26,8 @@ export class SocketGateway implements OnGatewayInit {
     this.server = server;
 
     this.server.on('connection', (socket: Socket) => {
+      this.logger.log(`⚡ Client connected`);
+
       // both client user types (browser and agent) must provide a valid wsToken
       const wsToken = socket.handshake.auth['wsToken'] as string;
 
@@ -82,6 +85,41 @@ export class SocketGateway implements OnGatewayInit {
   @SubscribeMessage('reboot')
   handleReboot(@MessageBody() payload: { clusterId: string; agentId: string }): void {
     const metricsRoom = `reboot:${payload.clusterId}:${payload.agentId}`;
+
+    this.server.emit(metricsRoom, payload);
+  }
+
+  @SubscribeMessage('pm2-action')
+  handlePM2Action(
+    @MessageBody()
+    payload: {
+      clusterId: string;
+      agentId: string;
+      action: string;
+      serviceName: string;
+    },
+  ): void {
+    const metricsRoom = `pm2-action:${payload.clusterId}:${payload.agentId}`;
+
+    this.server.emit(metricsRoom, payload);
+  }
+
+  @SubscribeMessage('pm2-action-result')
+  handlePM2ActionResult(
+    @MessageBody()
+    payload: {
+      clusterId: string;
+      agentId: string;
+      action: string;
+      serviceName: string;
+      timestamp: string;
+      success: boolean;
+      error: any;
+    },
+  ): void {
+    const metricsRoom = `pm2-action-result:${payload.clusterId}:${payload.agentId}`;
+
+    this.logger.log('metrics room', metricsRoom);
 
     this.server.emit(metricsRoom, payload);
   }
