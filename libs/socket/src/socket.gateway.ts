@@ -93,6 +93,7 @@ export class SocketGateway implements OnGatewayInit {
   handlePM2Action(
     @MessageBody()
     payload: {
+      configFile?: string;
       clusterId: string;
       agentId: string;
       action: string;
